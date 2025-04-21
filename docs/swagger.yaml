@@ -1,0 +1,751 @@
+openapi: 3.0.0
+info:
+  title: Healthcare Management API
+  description: API for healthcare management with receptionist and doctor portals
+  version: 1.0.0
+  contact:
+    name: API Support
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Invalid request
+    
+    Success:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operation successful
+        data:
+          type: object
+    
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: doctor@example.com
+        password:
+          type: string
+          format: password
+          example: password123
+    
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        user:
+          $ref: '#/components/schemas/User'
+    
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Dr. Smith
+        email:
+          type: string
+          format: email
+          example: doctor@example.com
+        role:
+          type: string
+          enum: [receptionist, doctor]
+          example: doctor
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    
+    CreateUserRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+        - role
+      properties:
+        name:
+          type: string
+          example: Dr. Smith
+        email:
+          type: string
+          format: email
+          example: doctor@example.com
+        password:
+          type: string
+          format: password
+          example: password123
+        role:
+          type: string
+          enum: [receptionist, doctor]
+          example: doctor
+    
+    Patient:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        first_name:
+          type: string
+          example: John
+        last_name:
+          type: string
+          example: Doe
+        date_of_birth:
+          type: string
+          format: date
+          example: 1990-01-01
+        gender:
+          type: string
+          enum: [male, female, other]
+          example: male
+        contact_number:
+          type: string
+          example: "1234567890"
+        email:
+          type: string
+          format: email
+          example: john.doe@example.com
+        address:
+          type: string
+          example: 123 Main St, City
+        emergency_name:
+          type: string
+          example: Jane Doe
+        emergency_number:
+          type: string
+          example: "0987654321"
+        blood_group:
+          type: string
+          example: A+
+        allergies:
+          type: string
+          example: Peanuts
+        medical_history:
+          type: string
+          example: Asthma
+        current_medication:
+          type: string
+          example: Ventolin
+        notes:
+          type: string
+          example: Patient needs regular check-ups
+        registered_by:
+          type: integer
+          format: int64
+          example: 2
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    
+    CreatePatientRequest:
+      type: object
+      required:
+        - first_name
+        - last_name
+        - date_of_birth
+        - gender
+        - contact_number
+        - address
+      properties:
+        first_name:
+          type: string
+          example: John
+        last_name:
+          type: string
+          example: Doe
+        date_of_birth:
+          type: string
+          format: date
+          example: 1990-01-01
+        gender:
+          type: string
+          enum: [male, female, other]
+          example: male
+        contact_number:
+          type: string
+          example: "1234567890"
+        email:
+          type: string
+          format: email
+          example: john.doe@example.com
+        address:
+          type: string
+          example: 123 Main St, City
+        emergency_name:
+          type: string
+          example: Jane Doe
+        emergency_number:
+          type: string
+          example: "0987654321"
+        blood_group:
+          type: string
+          example: A+
+        allergies:
+          type: string
+          example: Peanuts
+        medical_history:
+          type: string
+          example: Asthma
+        current_medication:
+          type: string
+          example: Ventolin
+        notes:
+          type: string
+          example: Patient needs regular check-ups
+    
+    UpdatePatientRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          example: John
+        last_name:
+          type: string
+          example: Doe
+        date_of_birth:
+          type: string
+          format: date
+          example: 1990-01-01
+        gender:
+          type: string
+          enum: [male, female, other]
+          example: male
+        contact_number:
+          type: string
+          example: "1234567890"
+        email:
+          type: string
+          format: email
+          example: john.doe@example.com
+        address:
+          type: string
+          example: 123 Main St, City
+        emergency_name:
+          type: string
+          example: Jane Doe
+        emergency_number:
+          type: string
+          example: "0987654321"
+        blood_group:
+          type: string
+          example: A+
+        allergies:
+          type: string
+          example: Peanuts
+        medical_history:
+          type: string
+          example: Asthma
+        current_medication:
+          type: string
+          example: Ventolin
+        notes:
+          type: string
+          example: Patient needs regular check-ups
+    
+    UpdatePatientMedicalRequest:
+      type: object
+      properties:
+        blood_group:
+          type: string
+          example: A+
+        allergies:
+          type: string
+          example: Peanuts
+        medical_history:
+          type: string
+          example: Asthma
+        current_medication:
+          type: string
+          example: Ventolin
+        notes:
+          type: string
+          example: Patient needs regular check-ups
+    
+    PaginationResponse:
+      type: object
+      properties:
+        totalItems:
+          type: integer
+          example: 42
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Patient'
+        page:
+          type: integer
+          example: 1
+        pageSize:
+          type: integer
+          example: 10
+        totalPages:
+          type: integer
+          example: 5
+
+paths:
+  /login:
+    post:
+      summary: Login
+      description: Login for both receptionist and doctor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /users:
+    post:
+      summary: Create user
+      description: Create a new user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /patients:
+    get:
+      summary: Get all patients
+      description: Get all patients with pagination (Receptionist only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            default: 10
+          description: Page size
+      responses:
+        '200':
+          description: List of patients
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginationResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create patient
+      description: Create a new patient (Receptionist only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePatientRequest'
+      responses:
+        '201':
+          description: Patient created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /patients/{id}:
+    get:
+      summary: Get patient
+      description: Get a patient by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Patient ID
+      responses:
+        '200':
+          description: Patient details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Patient not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Update patient
+      description: Update a patient (Receptionist only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Patient ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePatientRequest'
+      responses:
+        '200':
+          description: Patient updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Patient not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete patient
+      description: Delete a patient (Receptionist only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Patient ID
+      responses:
+        '200':
+          description: Patient deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Patient not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /patients/search:
+    get:
+      summary: Search patients
+      description: Search patients by search term (Receptionist only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Search term
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            default: 10
+          description: Page size
+      responses:
+        '200':
+          description: List of patients
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginationResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /doctor/patients:
+    get:
+      summary: Get all patients (Doctor)
+      description: Get all patients with pagination (Doctor only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            default: 10
+          description: Page size
+      responses:
+        '200':
+          description: List of patients
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginationResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /doctor/patients/{id}:
+    get:
+      summary: Get patient (Doctor)
+      description: Get a patient by ID (Doctor only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Patient ID
+      responses:
+        '200':
+          description: Patient details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Patient not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /doctor/patients/{id}/medical:
+    put:
+      summary: Update patient medical info
+      description: Update a patient's medical information (Doctor only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Patient ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePatientMedicalRequest'
+      responses:
+        '200':
+          description: Patient medical info updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Patient not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error' 
